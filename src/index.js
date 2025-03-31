@@ -3,10 +3,13 @@
 import "./styles.css";
 import { Task } from "./includes/task.js";
 import { Project } from "./includes/project.js";
-import { renderSidebar } from "./includes/domManipulator.js";
+import { renderContent, renderSidebar } from "./includes/domManipulator.js";
 
 // Initialize default project for user
 const defaultProject = new Project("default");
+const testProj = new Project("test");
+defaultProject.toggleActive();
+let projectList = [defaultProject, testProj];
 
 const sampleTask = new Task(
     "Sample Task",
@@ -26,7 +29,8 @@ defaultProject.addTask(sampleTask);
 //     console.log(Task.fromJson(task.toJson()));
 // });
 
-renderSidebar([defaultProject]);
+renderSidebar(projectList);
+renderContent(defaultProject);
 
 
-console.log(localStorage);
+console.log(projectList[0].active);
