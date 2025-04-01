@@ -3,11 +3,36 @@
 import folderClosedIcon from "../asset/folder_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import folderOpenIcon from "../asset/folder_open_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import openInFullIcon from "../asset/open_in_full_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import completeIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import incompleteIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
+import incompleteIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
+import completeIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import removeIcon from "../asset/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
 
 import { compareAsc, format } from "date-fns";
+
+/**
+ *  RENDERING
+ */
+
+export function renderAddBtn() {
+    const addBtn = document.createElement("button");
+    addBtn.innerHTML = `<svg
+                            class="add-new-icon"
+                            viewBox="0 0 24 24"
+                            height="60px"
+                            width="60px"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path
+                            stroke-width="1.5"
+                            d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                            ></path>
+                            <path stroke-width="1.5" d="M8 12H16"></path>
+                            <path stroke-width="1.5" d="M12 16V8"></path>
+                        </svg>`;
+    addBtn.classList.add("add-new-btn");
+    addBtn.addEventListener("click", handleAdd);
+    document.body.appendChild(addBtn);
+}
 
 export function renderSidebar(projects) {
     const sidebar = document.querySelector("#sidebar");
@@ -41,6 +66,19 @@ export function renderContent(project, mode = "list") {
     }    
 }
 
+function renderTaskForm() {
+    console.log("Render task form.");
+}
+
+function renderProjectForm() {
+    console.log("Render project form.");
+}
+
+
+/**
+ *  EVENT HANDLERS
+ */
+
 // Handles clicking on projects in sidebar
 function handleProjectClick(projectList, clickedProject, activeProject) {
     if (clickedProject === activeProject) {
@@ -64,6 +102,28 @@ function handleTaskClick(e, task, project) {
         renderContent(project);
     }
 }
+// Handles clicking the add button by displaying a modal
+function handleAdd() {
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+    
+    // Create the modal content container for choosing project or task
+    modalOverlay.innerHTML = `
+      <div class="modal-content">
+        <button id="add-task">Add <span class="button-span">Task</span></button>
+        <button id="add-project">Add <span class="button-span">Project</span></button>
+        <button class="close-modal">Close</button>
+      </div>
+    `;
+    
+    document.body.appendChild(modalOverlay);
+    modalOverlay.querySelector(".close-modal").addEventListener("click", function () {
+      document.body.removeChild(modalOverlay);
+    }); 
+
+    modalOverlay.querySelector("#add-task").addEventListener("click", renderTaskForm);
+    modalOverlay.querySelector("#add-project").addEventListener("click", renderProjectForm);
+}
 
 // Creates toolBar Dom element for content div
 function createToolBar(project) {
@@ -71,8 +131,8 @@ function createToolBar(project) {
     toolBar.classList.add("toolbar");
 
     const projName = document.createElement("div");
-    projName.style = "font-size: 25px; height: 30px;";
-    projName.textContent = project.name;
+    projName.style = "font-size: 30px; height: 50px; margin-left: 1rem;";
+    projName.textContent = `./${project.name}`;
 
     const toolsWrapper = document.createElement("div");
     const sortDropdown = document.createElement("div");
@@ -86,7 +146,7 @@ function createToolBar(project) {
         `;
     // const displayToggleButton = document.createElement("button");
     // displayToggleButton.textContent = "Toggle";
-    toolsWrapper.style = "display: flex; justify-content: center; align-items: center; height: 30px;";
+    toolsWrapper.style = "display: flex; justify-content: center; align-items: flex-end; height: 30px;";
     toolsWrapper.appendChild(sortDropdown);
     // toolsWrapper.appendChild(displayToggleButton);
 

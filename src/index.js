@@ -3,7 +3,7 @@
 import "./styles.css";
 import { Task } from "./includes/task.js";
 import { Project } from "./includes/project.js";
-import { renderContent, renderSidebar, handleTaskButton } from "./includes/domManipulator.js";
+import { renderAddBtn, renderContent, renderSidebar, handleTaskButton } from "./includes/domManipulator.js";
 
 // Initialize default project for user
 const defaultProject = new Project("default");
@@ -52,6 +52,7 @@ defaultProject.addTask(sampleTask2);
 //     console.log(Task.fromJson(task.toJson()));
 // });
 
+renderAddBtn();
 renderSidebar(projectList, currentProject);
 renderContent(defaultProject);
 
