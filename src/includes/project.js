@@ -14,8 +14,14 @@ export class Project {
         this.tasks.push(task);
     }
 
+    // Toggles completed status
     toggleActive() {
         this.active = !this.active;
+    }
+
+    // Removes task by id
+    removeTask(id) {
+        this.tasks = this.tasks.filter((task) => task.id !== id);
     }
 
 }

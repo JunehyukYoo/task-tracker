@@ -43,14 +43,6 @@ header {
     border-bottom: 0.25px solid rgb(143, 146, 146);
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
-}
-
 /* Content */
 #content {
     padding: calc(2rem + 10px);
@@ -60,6 +52,7 @@ header {
 .toolbar {
     display: flex;
     justify-content: space-between;
+    font-weight: 800;
 }
 
 .task-tile {
@@ -72,7 +65,13 @@ header {
 .task-list {
     border-top: 0.25px solid rgb(143, 146, 146);
     border-bottom: 0.25px solid rgb(143, 146, 146);
-    height: 30px;
+    height: 32px;
     display: flex;
     align-items: center;
+}
+
+.task-button {
+    display: flex;
+    align-items: center;
+    width: 33%;
 }

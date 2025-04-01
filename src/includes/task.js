@@ -1,9 +1,7 @@
 // task.js
-// import { compareAsc, format } from "date-fns";
-
 // Each task has a title, description, dueDate, priority, notes
 export class Task {
-    constructor(title, description = "", dueDate , priority = "", notes = "", project) {
+    constructor(title, description = "", dueDate = "", priority = "", notes = "", project) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
@@ -11,6 +9,7 @@ export class Task {
         this.notes = notes;
         this.project = project;
         this.completed = false;
+        this.id = crypto.randomUUID();
     }
 
     toggleCompleted() {
