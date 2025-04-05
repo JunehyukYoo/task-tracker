@@ -7,12 +7,11 @@ import incompleteIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_o
 import completeIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import removeIcon from "../asset/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
 
-import { compareAsc, format } from "date-fns";
+import { format } from "date-fns";
 
 /**
  *  RENDERING
  */
-
 export function renderAddBtn() {
     const addBtn = document.createElement("button");
     addBtn.innerHTML = `<svg
@@ -47,23 +46,31 @@ export function renderSidebar(projects) {
     });
 }
 
-export function renderContent(project, mode = "list") {
+export function renderContent(project, mode = "created") {
     const content = document.querySelector("#content");
     content.innerHTML = "";
 
     const toolBar = createToolBar(project);
     content.appendChild(toolBar);
 
-    const taskList = project.tasks;
-    if (taskList.length === 0) {
+    renderTasks(project, mode);
+}
+
+function renderTasks(project, mode) {
+    const content = document.querySelector('#content');
+    const tasksToRemove = document.querySelectorAll(".task-list");
+    tasksToRemove.forEach((elem) => elem.remove());
+    const tasksList = project.getSortedTasks(mode);
+    console.log(tasksList);
+    if (tasksList.length === 0) {
         content.textContent = "Empty project. Click the + button to add a task!";
     } else {
-        taskList.forEach(task => {
-            const taskItem = createTaskItem(task, mode);
+        tasksList.forEach(task => {
+            const taskItem = createTaskItem(task);
             taskItem.addEventListener("click", (e) => handleTaskClick(e, task, project));
             content.appendChild(taskItem);
         });
-    }    
+    }
 }
 
 function renderTaskForm() {
@@ -144,14 +151,19 @@ function createToolBar(project) {
             <option value="duedate">Due Date</option>
         </select>
         `;
-    // const displayToggleButton = document.createElement("button");
-    // displayToggleButton.textContent = "Toggle";
+    
     toolsWrapper.style = "display: flex; justify-content: center; align-items: flex-end; height: 30px;";
     toolsWrapper.appendChild(sortDropdown);
-    // toolsWrapper.appendChild(displayToggleButton);
 
     toolBar.appendChild(projName);
     toolBar.appendChild(toolsWrapper);
+
+    toolBar.addEventListener('change', (e) => {
+        const targetIdx = e.target.options.selectedIndex;
+        const selectedMode = e.target.options[targetIdx].value;
+        console.log(selectedMode);
+        renderTasks(project, selectedMode);
+    });
     return toolBar;
 
 }
@@ -167,14 +179,13 @@ function createProjectItem(project) {
 }
 
 // Creates a task DOM element for content div
-// mode -> list sorting method
-function createTaskItem(task, mode) {
+function createTaskItem(task, mode = 'list') {
     const taskItem = document.createElement("div");
     if (mode === "list") {
         // Title: fixed width (20%), no shrinking
         const taskTitle = document.createElement("div");
         taskTitle.textContent = task.title;
-        taskTitle.style = "flex: 0 0 20%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #d0c632; text-decoration: #d0c632 solid underline;";
+        taskTitle.style = "flex: 0 0 20%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 1rem; color: #d0c632; text-decoration: #d0c632 solid underline;";
 
         // Description: flexible, will shrink until its min-width is reached
         const taskDesc = document.createElement("div");
@@ -214,12 +225,10 @@ function createTaskItem(task, mode) {
         taskItem.appendChild(taskStatus);
         taskItem.appendChild(taskBtnWrapper);
     } else if (mode == "tile") {
-
+        // TODO:
     } else {
         throw new Error("Invalid task mode");
-        
     }
-
     taskItem.classList.add(`task-${mode}`);
     return taskItem;
 }

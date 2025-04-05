@@ -14,7 +14,7 @@ export class Project {
         this.tasks.push(task);
     }
 
-    // Toggles completed status
+    // Toggles active status
     toggleActive() {
         this.active = !this.active;
     }
@@ -24,4 +24,31 @@ export class Project {
         this.tasks = this.tasks.filter((task) => task.id !== id);
     }
 
+    // Sort tasks in a specific mode and return sorted tasks array
+    getSortedTasks(mode = 'created') {
+        const priorityToInt = (task) => { 
+            if (task.priority.toLowerCase() === 'high') {
+                return 0;
+            } else if (task.priority.toLowerCase() === 'medium') {
+                return 1;
+            } else {
+                return 2;
+            }
+        };
+
+        const tasksCopy = this.tasks.slice();
+        if (mode === 'created') {
+            return this.tasks;
+        } else if (mode === 'priority') {
+            tasksCopy.sort((t1, t2) => {
+                return priorityToInt(t1) - priorityToInt(t2);
+            });
+        } else {
+            tasksCopy.sort((t1, t2) => {
+                console.log(t1.dueDate);
+                return t1.dueDate - t2.dueDate;
+            });
+        }
+        return tasksCopy;
+    }
 }

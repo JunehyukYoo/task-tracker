@@ -3,7 +3,7 @@
 import "./styles.css";
 import { Task } from "./includes/task.js";
 import { Project } from "./includes/project.js";
-import { renderAddBtn, renderContent, renderSidebar, handleTaskButton } from "./includes/domManipulator.js";
+import { renderAddBtn, renderContent, renderSidebar } from "./includes/domManipulator.js";
 
 // Initialize default project for user
 const defaultProject = new Project("default");
@@ -40,10 +40,20 @@ const sampleTask2 = new Task(
     ,
     defaultProject.id
 );
+
+const sampleTask3 = new Task(
+    "Eat dinner",
+    "Eat a nutritious dinner.",
+    new Date(2025, 2, 1),
+    "Medium",
+    'Carbonara',
+    defaultProject.id
+);
 sampleTask2.toggleCompleted();
 
 defaultProject.addTask(sampleTask);
 defaultProject.addTask(sampleTask2);
+defaultProject.addTask(sampleTask3);
 
 // defaultProject.tasks.forEach ((task) => {
 //     console.log("--JSON--");
