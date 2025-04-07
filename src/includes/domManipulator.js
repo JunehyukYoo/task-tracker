@@ -1,16 +1,12 @@
 // domManipulator.js
-
-import folderClosedIcon from "../asset/folder_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import folderOpenIcon from "../asset/folder_open_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import openInFullIcon from "../asset/open_in_full_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import incompleteIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import completeIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-import removeIcon from "../asset/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
-
-import { format } from "date-fns";
+import { createTaskItem, createProjectItem, createToolBar } from "./domCreator";
 
 /**
  *  RENDERING
+ */
+
+/**
+ * Renders add button (for tasks and projects) statically.
  */
 export function renderAddBtn() {
     const addBtn = document.createElement("button");
@@ -33,6 +29,11 @@ export function renderAddBtn() {
     document.body.appendChild(addBtn);
 }
 
+/**
+ * Renders a directory of current projects in a sidebar.
+ * 
+ * @param {Array[Project]} projects is the array of current projects.
+ */
 export function renderSidebar(projects) {
     const sidebar = document.querySelector("#sidebar");
     sidebar.innerHTML = "";
@@ -46,21 +47,43 @@ export function renderSidebar(projects) {
     });
 }
 
-export function renderContent(project, mode = "created") {
+/**
+ * Renders all content of a specific project, tasks sorted with the given method.
+ * Renders a toolbar and contents (where task items live) separately. 
+ * 
+ * @param {Project} project is the current project to render.
+ * @param {string} method is the sorting mode.
+ */
+export function renderContent(project, method = "created") {
     const content = document.querySelector("#content");
     content.innerHTML = "";
 
     const toolBar = createToolBar(project);
+    toolBar.addEventListener('change', (e) => {
+        const targetIdx = e.target.options.selectedIndex;
+        const selectedMethod = e.target.options[targetIdx].value;
+        renderTasksInProj(project, selectedMethod);
+    });
     content.appendChild(toolBar);
 
-    renderTasks(project, mode);
+    renderTasksInProj(project, method);
 }
 
-function renderTasks(project, mode) {
+/**
+ * Renders tasks in a project with tasks sorted in by a specific method.
+ * Tasks are appended to '#content' DOM element found in ../template.html.
+ * Kept in a separate function so task items change independently of the
+ * toolbar.
+ * 
+ * @param {Project} project is the current project to render.
+ * @param {string} method is the sorting mode.
+ */
+function renderTasksInProj(project, method) {
     const content = document.querySelector('#content');
+
     const tasksToRemove = document.querySelectorAll(".task-list");
     tasksToRemove.forEach((elem) => elem.remove());
-    const tasksList = project.getSortedTasks(mode);
+    const tasksList = project.getSortedTasks(method);
     console.log(tasksList);
     if (tasksList.length === 0) {
         content.textContent = "Empty project. Click the + button to add a task!";
@@ -73,17 +96,39 @@ function renderTasks(project, mode) {
     }
 }
 
+/**
+ * Renders a task in full (tile mode).
+ * 
+ * @param {Task} task is the current task.
+ * @param {Project} project is the current project.
+ */
+function renderTaskTile(task, project) {
+    const taskTile = createTaskItem(task, 'tile');
+    taskTile.addEventListener('click', (e) => handleTaskClick(e, task, project));
+
+    let modalOverlay = document.querySelector('.modal-overlay');
+    if (modalOverlay) {
+        modalOverlay.replaceChild(taskTile, modalOverlay.firstChild);
+    } else {
+        modalOverlay = document.createElement('div');
+        modalOverlay.className = 'modal-overlay';
+        modalOverlay.appendChild(taskTile);
+        document.body.appendChild(modalOverlay);
+        console.log(modalOverlay);
+    }    
+}
+
 function renderTaskForm() {
-    console.log("Render task form.");
+    console.log("TODO: Render task form.");
 }
 
 function renderProjectForm() {
-    console.log("Render project form.");
+    console.log("TODO: Render project form.");
 }
 
 
 /**
- *  EVENT HANDLERS
+ *  EVENT HANDLING
  */
 
 // Handles clicking on projects in sidebar
@@ -99,16 +144,28 @@ function handleProjectClick(projectList, clickedProject, activeProject) {
 
 // Handles clicking on task buttons
 function handleTaskClick(e, task, project) {
+    const isTile = e.target.parentNode.parentNode.classList.contains('task-tile');
     if (e.target.classList.contains("toggle-complete-button")) {
         task.toggleCompleted();
         renderContent(project);
+        if (isTile) {
+            renderTaskTile(task, project);
+        }
     } else if (e.target.classList.contains("open-full-button")) {
-        console.log("OPEN FULL TO BE IMPLEMENTED");
+        renderTaskTile(task, project);
     } else if (e.target.classList.contains("remove-task-button")) {
+        if (isTile) {
+            const modalOverlay = document.querySelector('.modal-overlay');
+            document.body.removeChild(modalOverlay);
+        }
         project.removeTask(task.id);
         renderContent(project);
+    } else if (e.target.classList.contains('close-task-tile-button')) {
+        const modalOverlay = document.querySelector('.modal-overlay');
+        document.body.removeChild(modalOverlay);
     }
 }
+
 // Handles clicking the add button by displaying a modal
 function handleAdd() {
     const modalOverlay = document.createElement('div');
@@ -130,105 +187,4 @@ function handleAdd() {
 
     modalOverlay.querySelector("#add-task").addEventListener("click", renderTaskForm);
     modalOverlay.querySelector("#add-project").addEventListener("click", renderProjectForm);
-}
-
-// Creates toolBar Dom element for content div
-function createToolBar(project) {
-    const toolBar = document.createElement("div");
-    toolBar.classList.add("toolbar");
-
-    const projName = document.createElement("div");
-    projName.style = "font-size: 30px; height: 50px; margin-left: 1rem;";
-    projName.textContent = `./${project.name}`;
-
-    const toolsWrapper = document.createElement("div");
-    const sortDropdown = document.createElement("div");
-    sortDropdown.innerHTML = `
-        <label for="sort">Sort: </label>
-        <select name="sort" id="sort">
-            <option value="created">Created</option>
-            <option value="priority">Priority</option>
-            <option value="duedate">Due Date</option>
-        </select>
-        `;
-    
-    toolsWrapper.style = "display: flex; justify-content: center; align-items: flex-end; height: 30px;";
-    toolsWrapper.appendChild(sortDropdown);
-
-    toolBar.appendChild(projName);
-    toolBar.appendChild(toolsWrapper);
-
-    toolBar.addEventListener('change', (e) => {
-        const targetIdx = e.target.options.selectedIndex;
-        const selectedMode = e.target.options[targetIdx].value;
-        console.log(selectedMode);
-        renderTasks(project, selectedMode);
-    });
-    return toolBar;
-
-}
-
-// Creates project DOM element for sidebar div
-function createProjectItem(project) {
-    const projectItem = document.createElement("div");
-    const iconHtml = project.active ? `<img src="${folderOpenIcon}"/>` : `<img src="${folderClosedIcon}"/>`;
-    projectItem.innerHTML = `<span class="material-symbols-outlined" style="margin-right: 3px">${iconHtml}</span>${project.name}`;
-    projectItem.classList.add("project-item");
-
-    return projectItem;
-}
-
-// Creates a task DOM element for content div
-function createTaskItem(task, mode = 'list') {
-    const taskItem = document.createElement("div");
-    if (mode === "list") {
-        // Title: fixed width (20%), no shrinking
-        const taskTitle = document.createElement("div");
-        taskTitle.textContent = task.title;
-        taskTitle.style = "flex: 0 0 20%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 1rem; color: #d0c632; text-decoration: #d0c632 solid underline;";
-
-        // Description: flexible, will shrink until its min-width is reached
-        const taskDesc = document.createElement("div");
-        taskDesc.textContent = task.description;
-        // Allow it to grow and shrink but not below 100px (adjust as needed)
-        taskDesc.style = "flex: 1 1 auto; min-width: 10px; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;";
-
-        // Due Date: fixed width (10%), no shrinking
-        const taskDueDate = document.createElement("div");
-        taskDueDate.textContent = `DUE: ${format(new Date(task.dueDate), "MMM dd, yyyy")}`;
-        taskDueDate.style = "flex: 0 0 20%; min-width: 0;";
-
-        // Priority: fixed width (10%), no shrinking
-        const taskPriority = document.createElement("div");
-        taskPriority.textContent = task.priority + " priority";
-        taskPriority.style = "flex: 0 0 10%; min-width: 0;";
-
-        // Status: fixed width (10%), no shrinking
-        const taskStatus = document.createElement("div");
-        taskStatus.textContent = task.completed ? "Complete" : "Incomplete";
-        taskStatus.style = task.completed ? "flex: 0 0 10%; min-width: 0;" : "flex: 0 0 10%; min-width: 0; color: red";
-
-        // Button Wrapper: fixed width (10%), with flex layout for the buttons
-        const taskBtnWrapper = document.createElement("div");
-        const toggleButton = task.completed ? completeIcon : incompleteIcon;
-        taskBtnWrapper.innerHTML = `
-        <img src="${toggleButton}" class="toggle-complete-button" id="toggle-${task.id}">
-        <img src="${openInFullIcon}" class="open-full-button" id="open-${task.id}">
-        <img src="${removeIcon}" class="remove-task-button" id="remove-${task.id}">
-        `;
-        taskBtnWrapper.style = "flex: 0 0 10%; min-width: 0; display: flex; justify-content: space-around; align-items: center;";
-
-        taskItem.appendChild(taskTitle);
-        taskItem.appendChild(taskDesc);
-        taskItem.appendChild(taskDueDate);
-        taskItem.appendChild(taskPriority);
-        taskItem.appendChild(taskStatus);
-        taskItem.appendChild(taskBtnWrapper);
-    } else if (mode == "tile") {
-        // TODO:
-    } else {
-        throw new Error("Invalid task mode");
-    }
-    taskItem.classList.add(`task-${mode}`);
-    return taskItem;
 }

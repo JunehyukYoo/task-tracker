@@ -24,8 +24,8 @@ export class Project {
         this.tasks = this.tasks.filter((task) => task.id !== id);
     }
 
-    // Sort tasks in a specific mode and return sorted tasks array
-    getSortedTasks(mode = 'created') {
+    // Sort tasks in a specific method and return sorted tasks array
+    getSortedTasks(method = 'created') {
         const priorityToInt = (task) => { 
             if (task.priority.toLowerCase() === 'high') {
                 return 0;
@@ -37,9 +37,9 @@ export class Project {
         };
 
         const tasksCopy = this.tasks.slice();
-        if (mode === 'created') {
+        if (method === 'created') {
             return this.tasks;
-        } else if (mode === 'priority') {
+        } else if (method === 'priority') {
             tasksCopy.sort((t1, t2) => {
                 return priorityToInt(t1) - priorityToInt(t2);
             });

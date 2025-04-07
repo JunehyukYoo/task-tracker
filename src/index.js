@@ -65,6 +65,3 @@ defaultProject.addTask(sampleTask3);
 renderAddBtn();
 renderSidebar(projectList, currentProject);
 renderContent(defaultProject);
-
-
-console.log(projectList[0].active);
