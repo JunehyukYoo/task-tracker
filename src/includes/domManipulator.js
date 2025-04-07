@@ -1,4 +1,6 @@
 // domManipulator.js
+import { Task } from './task';
+import { Project } from './project'
 import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, createProjectFormItem, createFormSelectionItem } from "./domCreator";
 
 /**
@@ -8,7 +10,7 @@ import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, c
 /**
  * Renders add button (for tasks and projects) statically.
  */
-export function renderAddBtn() {
+export function renderAddBtn(projectList) {
     const addBtn = document.createElement("button");
     addBtn.innerHTML = `<svg
                             class="add-new-icon"
@@ -25,7 +27,7 @@ export function renderAddBtn() {
                             <path stroke-width="1.5" d="M12 16V8"></path>
                         </svg>`;
     addBtn.classList.add("add-new-btn");
-    addBtn.addEventListener("click", handleAdd);
+    addBtn.addEventListener("click", () => handleAdd(projectList));
     document.body.appendChild(addBtn);
 }
 
@@ -84,7 +86,6 @@ function renderTasksInProj(project, method) {
     const tasksToRemove = document.querySelectorAll(".task-list");
     tasksToRemove.forEach((elem) => elem.remove());
     const tasksList = project.getSortedTasks(method);
-    console.log(tasksList);
     if (tasksList.length === 0) {
         content.textContent = "Empty project. Click the + button to add a task!";
     } else {
@@ -114,14 +115,13 @@ function renderTaskTile(task, project) {
         modalOverlay.className = 'modal-overlay';
         modalOverlay.appendChild(taskTile);
         document.body.appendChild(modalOverlay);
-        console.log(modalOverlay);
     }    
 }
 
-function renderForm(type) {
+function renderForm(type, projectList, activeProject) {
     if (type === 'task') {
         const taskForm = createTaskFormItem();
-        taskForm.addEventListener('submit', handleFormSubmit);
+        taskForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList, activeProject));
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -137,7 +137,7 @@ function renderForm(type) {
         taskForm.querySelector('img').addEventListener('click', () => document.body.removeChild(modalOverlay));
     } else if (type == 'project') {
         const projForm = createProjectFormItem();
-        projForm.addEventListener('submit', handleFormSubmit);
+        projForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList, activeProject));
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -195,7 +195,7 @@ function handleTaskClick(e, task, project) {
 }
 
 // Handles clicking the add button by displaying a modal
-function handleAdd() {
+function handleAdd(projectList) {
     const formSelector = createFormSelectionItem();
 
     const modalOverlay = document.createElement('div');
@@ -209,12 +209,48 @@ function handleAdd() {
       document.body.removeChild(modalOverlay);
     }); 
 
-    modalOverlay.querySelector("#add-task").addEventListener("click", () => renderForm('task'));
-    modalOverlay.querySelector("#add-project").addEventListener("click", () => renderForm('project'));
+    modalOverlay.querySelector("#add-task").addEventListener("click", () => renderForm('task', projectList));
+    modalOverlay.querySelector("#add-project").addEventListener("click", () => renderForm('project', projectList));
 }
 
 // Handles form submission
-function handleFormSubmit(e) {
+function handleFormSubmit(e, projectList) {
     e.preventDefault();
-    console.log(e.target);
+    const activeProject = projectList.find(project => project.active);
+    if (e.target.classList.contains('task-form')) {
+        const newTask = new Task('temp', activeProject.id);
+        for (let item of e.target.children) {
+            if (item.value) {
+                if (item.name === 'title') {
+                    newTask.title = item.value;
+                } else if (item.name === 'description') {
+                    newTask.description = item.value;
+                } else if (item.name === 'dueDate') {
+                    newTask.dueDate = item.value;
+                } else if (item.name === 'priority') {
+                    newTask.priority = item.value.toUpperCase();
+                } else if (item.name === 'notes') {
+                    newTask.notes = item.value;
+                }
+            } 
+        }
+        activeProject.addTask(newTask);
+        const modalOverlay = document.querySelector('.modal-overlay');
+        document.body.removeChild(modalOverlay);
+        renderContent(activeProject);
+    } else if (e.target.classList.contains('project-form')) {
+        const newProject = new Project('temp');
+        for (let item of e.target.children) {
+            if (item.value) {
+                if (item.name === 'name') {
+                    newProject.name = item.value;
+                }
+            } 
+        }
+        const modalOverlay = document.querySelector('.modal-overlay');
+        document.body.removeChild(modalOverlay);
+        projectList.push(newProject);
+        renderSidebar(projectList);
+    }
+    
 }

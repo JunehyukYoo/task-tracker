@@ -45,7 +45,6 @@ export class Project {
             });
         } else {
             tasksCopy.sort((t1, t2) => {
-                console.log(t1.dueDate);
                 return t1.dueDate - t2.dueDate;
             });
         }

@@ -12,19 +12,20 @@ defaultProject.toggleActive();
 
 
 let projectList = [defaultProject, testProj];
-let currentProject = defaultProject;
+let activeProject = defaultProject;
 
 const sampleTask = new Task(
     "Finish exam prep",
+    defaultProject.id,
     "Finish prep for CS 101 and MATH 100.",
     new Date(2025, 4, 20),
     "High",
     "Some additional notes",
-    defaultProject.id
 );
 
 const sampleTask2 = new Task(
     "Go workout",
+    defaultProject.id,
     "Hit full body day.",
     new Date(2026, 6, 22),
     "Low",
@@ -36,18 +37,16 @@ const sampleTask2 = new Task(
     - Overhead Press: 3 sets x 10 reps at 60% of your max.
     - Dumbbell Rows: 3 sets x 12 reps per arm.
     - Cool Down: 5 minutes of stretching and foam rolling.
-    Remember to rest 1-2 minutes between sets and focus on proper form for each exercise.`
-    ,
-    defaultProject.id
+    Remember to rest 1-2 minutes between sets and focus on proper form for each exercise.`,
 );
 
 const sampleTask3 = new Task(
     "Eat dinner",
+    defaultProject.id,
     "Eat a nutritious dinner.",
     new Date(2025, 2, 1),
     "Medium",
-    'Carbonara',
-    defaultProject.id
+    'Carbonara'
 );
 sampleTask2.toggleCompleted();
 
@@ -55,13 +54,6 @@ defaultProject.addTask(sampleTask);
 defaultProject.addTask(sampleTask2);
 defaultProject.addTask(sampleTask3);
 
-// defaultProject.tasks.forEach ((task) => {
-//     console.log("--JSON--");
-//     console.log(task.toJson());
-//     console.log("--TO-OBJECT--");
-//     console.log(Task.fromJson(task.toJson()));
-// });
-
-renderAddBtn();
-renderSidebar(projectList, currentProject);
-renderContent(defaultProject);
+renderAddBtn(projectList);
+renderSidebar(projectList, activeProject);
+renderContent(activeProject);

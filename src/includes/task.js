@@ -1,11 +1,11 @@
 // task.js
 // Each task has a title, description, dueDate, priority, notes
 export class Task {
-    constructor(title, description = "", dueDate = "", priority = "", notes = "", project) {
+    constructor(title, project, description = "", dueDate = "", priority = "", notes = "") {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
-        this.priority = priority;
+        this.priority = priority.toUpperCase();
         this.notes = notes;
         this.project = project;
         this.completed = false;

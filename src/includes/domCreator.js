@@ -1,5 +1,4 @@
 // domCreator.js
-
 import folderClosedIcon from "../asset/folder_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import folderOpenIcon from "../asset/folder_open_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import openInFullIcon from "../asset/open_in_full_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
@@ -8,7 +7,6 @@ import incompleteIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_o
 import completeIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import removeIcon from "../asset/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
 import closeIcon from "../asset/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
-
 import { format } from "date-fns";
 
 // Creates project DOM element for sidebar div
@@ -175,14 +173,6 @@ export function createToolBar(project) {
 
     const toolsWrapper = document.createElement("div");
     const sortWrapper = document.createElement("div");
-    // sortWrapper.innerHTML = `
-    //     <label for="sort">Sort: </label>
-    //     <select name="sort" id="sort">
-    //         <option value="created">Created</option>
-    //         <option value="priority">Priority</option>
-    //         <option value="duedate">Due Date</option>
-    //     </select>
-    //     `;
     
     const sortLabel = document.createElement("label");
     sortLabel.textContent = "Sort: ";
@@ -285,7 +275,7 @@ export function createTaskFormItem() {
     priorityLabel.textContent = "Priority:";
     const prioritySelect = document.createElement("select");
     prioritySelect.name = "priority";
-    const priorities = ["Low", "Medium", "High"];
+    const priorities = ["LOW", "MEDIUM", "HIGH"];
     priorities.forEach(p => {
         const option = document.createElement("option");
         option.value = p.toLowerCase();
@@ -357,19 +347,9 @@ export function createProjectFormItem() {
     titleLabel.textContent = "Project Title:";
     const titleInput = document.createElement("input");
     titleInput.type = "text";
-    titleInput.name = "title";
+    titleInput.name = "name";
     titleInput.placeholder = "Enter project title";
     titleInput.required = true;
-
-    // Description Field
-    const descLabel = document.createElement("label");
-    descLabel.textContent = "Project Description:";
-    const descTextarea = document.createElement("textarea");
-    descTextarea.name = "description";
-    descTextarea.placeholder = "Enter project description";
-    descTextarea.required = true;
-
-    // You can add additional fields here if needed (e.g., due date, notes, etc.)
 
     // Submit Button
     const submitBtn = document.createElement("button");
@@ -391,8 +371,6 @@ export function createProjectFormItem() {
     form.appendChild(closeBtn);
     form.appendChild(titleLabel);
     form.appendChild(titleInput);
-    form.appendChild(descLabel);
-    form.appendChild(descTextarea);
     form.appendChild(submitBtn);
 
     // Style form inputs for consistency
