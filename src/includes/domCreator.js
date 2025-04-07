@@ -7,6 +7,7 @@ import closeTileIcon from '../asset/close_fullscreen_24dp_E3E3E3_FILL0_wght400_G
 import incompleteIcon from "../asset/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import completeIcon from "../asset/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 import removeIcon from "../asset/delete_forever_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
+import closeIcon from "../asset/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg";
 
 import { format } from "date-fns";
 
@@ -79,7 +80,13 @@ export function createTaskItem(task, mode = 'list') {
         // Title element (centered)
         const taskTitle = document.createElement("div");
         taskTitle.textContent = task.title;
-        taskTitle.style = "font-weight: bold; font-size: 1.2em; margin-bottom: 0.5rem; text-align: center;";
+        taskTitle.style = `
+            font-weight: bold; 
+            color: #d0c632; 
+            text-decoration: #d0c632 solid underline;
+            font-size: 1.5em; 
+            margin-bottom: 0.5rem; 
+            text-align: center;`;
 
         // Description element (with clamped lines)
         const taskDesc = document.createElement("div");
@@ -121,7 +128,7 @@ export function createTaskItem(task, mode = 'list') {
         taskNotes.value = task.notes || "";
         taskNotes.style = `
             width: 100%;
-            height: 80px;
+            flex: 1;
             margin: 0.5rem 0;
             border-radius: 5px;
             padding: 0.5rem;
@@ -183,4 +190,201 @@ export function createToolBar(project) {
     toolBar.appendChild(projName);
     toolBar.appendChild(toolsWrapper);
     return toolBar;
+}
+
+// Create form selector DOM item
+export function createFormSelectionItem() {
+    const formSelector = document.createElement('div');
+    formSelector.classList.add('form-selector');
+    formSelector.classList.add('modal-content');
+
+    const btnWrapper = document.createElement('div');
+    btnWrapper.style = `
+        display: flex;
+        justify-content: space-around;
+    `;
+    const addTaskBtn = document.createElement('button');
+    addTaskBtn.id = 'add-task';
+    addTaskBtn.innerHTML = `Add <span class="button-span">Task</span>`;
+
+    const addProjectBtn = document.createElement('button');
+    addProjectBtn.id = 'add-project';
+    addProjectBtn.innerHTML = `Add <span class="button-span">Project</span>`;
+
+    const closeBtn = document.createElement('img');
+    closeBtn.src = closeIcon;
+    closeBtn.id = 'close-form-button';
+    closeBtn.style = `
+        position: relative;
+        align-self: flex-end;
+        width: 20px;
+    `;
+
+    btnWrapper.appendChild(addTaskBtn);
+    btnWrapper.appendChild(addProjectBtn);
+    formSelector.appendChild(closeBtn);
+    formSelector.appendChild(btnWrapper);
+    return formSelector;
+}
+
+// Creates a form for adding a new task
+export function createTaskFormItem() {
+    const form = document.createElement("form");
+    form.classList.add("task-form");
+    form.classList.add('modal-content');
+
+    // Title Field
+    const titleLabel = document.createElement("label");
+    titleLabel.textContent = "Task Title:";
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.name = "title";
+    titleInput.placeholder = "Enter task title";
+    titleInput.required = true;
+
+    // Description Field
+    const descLabel = document.createElement("label");
+    descLabel.textContent = "Description:";
+    const descTextarea = document.createElement("textarea");
+    descTextarea.name = "description";
+    descTextarea.style = 'resize: vertical';
+    descTextarea.placeholder = "Enter task description";
+    descTextarea.required = true;
+
+    // Due Date Field
+    const dueDateLabel = document.createElement("label");
+    dueDateLabel.textContent = "Due Date:";
+    const dueDateInput = document.createElement("input");
+    dueDateInput.type = "date";
+    dueDateInput.name = "dueDate";
+    dueDateInput.required = true;
+
+    // Priority Field
+    const priorityLabel = document.createElement("label");
+    priorityLabel.textContent = "Priority:";
+    const prioritySelect = document.createElement("select");
+    prioritySelect.name = "priority";
+    const priorities = ["Low", "Medium", "High"];
+    priorities.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.toLowerCase();
+        option.textContent = p;
+        prioritySelect.appendChild(option);
+    });
+
+    // Notes Field
+    const notesLabel = document.createElement("label");
+    notesLabel.textContent = "Notes:";
+    const notesTextarea = document.createElement("textarea");
+    notesTextarea.name = "notes";
+    notesTextarea.placeholder = "Additional notes...";
+    notesTextarea.style = 'resize: vertical';
+
+    // Submit Button
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "submit";
+    submitBtn.textContent = "+";
+    submitBtn.style = 'width: 100%;';
+
+    // Close form button
+    const closeBtn = document.createElement('img');
+    closeBtn.src = closeIcon;
+    closeBtn.id = 'close-form-button';
+    closeBtn.style = `
+        position: relative;
+        align-self: flex-end;
+        width: 20px;
+    `;
+
+    // Append fields to the form
+    form.appendChild(closeBtn);
+    form.appendChild(titleLabel);
+    form.appendChild(titleInput);
+    form.appendChild(descLabel);
+    form.appendChild(descTextarea);
+    form.appendChild(dueDateLabel);
+    form.appendChild(dueDateInput);
+    form.appendChild(priorityLabel);
+    form.appendChild(prioritySelect);
+    form.appendChild(notesLabel);
+    form.appendChild(notesTextarea);
+    form.appendChild(submitBtn);
+
+    // Style form inputs for consistency
+    const inputs = form.querySelectorAll("input, textarea, select");
+    inputs.forEach(input => {
+        input.style = `
+            padding: 0.5rem;
+            border: 1px solid #777;
+            border-radius: 4px;
+            background-color: #444;
+            color: #fff;
+        `;
+    });
+
+    return form;
+}
+
+// Creates a form for adding a new project
+export function createProjectFormItem() {
+    const form = document.createElement("form");
+    form.classList.add("project-form");
+    form.classList.add('modal-content');
+
+    // Title Field
+    const titleLabel = document.createElement("label");
+    titleLabel.textContent = "Project Title:";
+    const titleInput = document.createElement("input");
+    titleInput.type = "text";
+    titleInput.name = "title";
+    titleInput.placeholder = "Enter project title";
+    titleInput.required = true;
+
+    // Description Field
+    const descLabel = document.createElement("label");
+    descLabel.textContent = "Project Description:";
+    const descTextarea = document.createElement("textarea");
+    descTextarea.name = "description";
+    descTextarea.placeholder = "Enter project description";
+    descTextarea.required = true;
+
+    // You can add additional fields here if needed (e.g., due date, notes, etc.)
+
+    // Submit Button
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "submit";
+    submitBtn.textContent = "+";
+    submitBtn.style = 'width: 100%;';
+
+    // Close form button
+    const closeBtn = document.createElement('img');
+    closeBtn.src = closeIcon;
+    closeBtn.id = 'close-form-button';
+    closeBtn.style = `
+        position: relative;
+        align-self: flex-end;
+        width: 20px;
+    `;
+
+    // Append fields to the form
+    form.appendChild(closeBtn);
+    form.appendChild(titleLabel);
+    form.appendChild(titleInput);
+    form.appendChild(descLabel);
+    form.appendChild(descTextarea);
+    form.appendChild(submitBtn);
+
+    // Style form inputs for consistency
+    const inputs = form.querySelectorAll("input, textarea");
+    inputs.forEach(input => {
+        input.style = `
+            padding: 0.5rem;
+            border: 1px solid #777;
+            border-radius: 4px;
+            background-color: #444;
+            color: #fff;
+        `;
+    });
+
+    return form;
 }

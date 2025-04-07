@@ -1,5 +1,5 @@
 // domManipulator.js
-import { createTaskItem, createProjectItem, createToolBar } from "./domCreator";
+import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, createProjectFormItem, createFormSelectionItem } from "./domCreator";
 
 /**
  *  RENDERING
@@ -118,12 +118,40 @@ function renderTaskTile(task, project) {
     }    
 }
 
-function renderTaskForm() {
-    console.log("TODO: Render task form.");
-}
+function renderForm(type) {
+    if (type === 'task') {
+        const taskForm = createTaskFormItem();
+        taskForm.addEventListener('submit', handleFormSubmit);
 
-function renderProjectForm() {
-    console.log("TODO: Render project form.");
+        let modalOverlay = document.querySelector('.modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.innerHTML = '';
+            modalOverlay.appendChild(taskForm);
+        } else {
+            modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal-overlay';
+            modalOverlay.appendChild(taskForm);
+            document.body.appendChild(modalOverlay);
+        } 
+
+        taskForm.querySelector('img').addEventListener('click', () => document.body.removeChild(modalOverlay));
+    } else if (type == 'project') {
+        const projForm = createProjectFormItem();
+        projForm.addEventListener('submit', handleFormSubmit);
+
+        let modalOverlay = document.querySelector('.modal-overlay');
+        if (modalOverlay) {
+            modalOverlay.innerHTML = '';
+            modalOverlay.appendChild(projForm);
+        } else {
+            modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal-overlay';
+            modalOverlay.appendChild(projForm);
+            document.body.appendChild(modalOverlay);
+        } 
+
+        projForm.querySelector('img').addEventListener('click', () => document.body.removeChild(modalOverlay));
+    }
 }
 
 
@@ -168,23 +196,25 @@ function handleTaskClick(e, task, project) {
 
 // Handles clicking the add button by displaying a modal
 function handleAdd() {
+    const formSelector = createFormSelectionItem();
+
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
     
-    // Create the modal content container for choosing project or task
-    modalOverlay.innerHTML = `
-      <div class="modal-content">
-        <button id="add-task">Add <span class="button-span">Task</span></button>
-        <button id="add-project">Add <span class="button-span">Project</span></button>
-        <button class="close-modal">Close</button>
-      </div>
-    `;
+    
+    modalOverlay.appendChild(formSelector);
     
     document.body.appendChild(modalOverlay);
-    modalOverlay.querySelector(".close-modal").addEventListener("click", function () {
+    formSelector.querySelector(`img`).addEventListener("click", function () {
       document.body.removeChild(modalOverlay);
     }); 
 
-    modalOverlay.querySelector("#add-task").addEventListener("click", renderTaskForm);
-    modalOverlay.querySelector("#add-project").addEventListener("click", renderProjectForm);
+    modalOverlay.querySelector("#add-task").addEventListener("click", () => renderForm('task'));
+    modalOverlay.querySelector("#add-project").addEventListener("click", () => renderForm('project'));
+}
+
+// Handles form submission
+function handleFormSubmit(e) {
+    e.preventDefault();
+    console.log(e.target);
 }
