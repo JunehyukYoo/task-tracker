@@ -174,18 +174,39 @@ export function createToolBar(project) {
     projName.textContent = `./${project.name}`;
 
     const toolsWrapper = document.createElement("div");
-    const sortDropdown = document.createElement("div");
-    sortDropdown.innerHTML = `
-        <label for="sort">Sort: </label>
-        <select name="sort" id="sort">
-            <option value="created">Created</option>
-            <option value="priority">Priority</option>
-            <option value="duedate">Due Date</option>
-        </select>
-        `;
+    const sortWrapper = document.createElement("div");
+    // sortWrapper.innerHTML = `
+    //     <label for="sort">Sort: </label>
+    //     <select name="sort" id="sort">
+    //         <option value="created">Created</option>
+    //         <option value="priority">Priority</option>
+    //         <option value="duedate">Due Date</option>
+    //     </select>
+    //     `;
+    
+    const sortLabel = document.createElement("label");
+    sortLabel.textContent = "Sort: ";
+    const sortSelect = document.createElement("select");
+    sortSelect.name = "sort";
+    const sortMethods = ["Created", "Priority", "Due Date"];
+    sortMethods.forEach(method => {
+        const option = document.createElement("option");
+        option.value = method.toLowerCase();
+        option.textContent = method;
+        sortSelect.appendChild(option);
+    });
+    sortSelect.style = `
+        padding: 0.5rem;
+        border: 1px solid #777;
+        border-radius: 4px;
+        background-color: #444;
+        color: #fff;
+    `;
+    sortWrapper.appendChild(sortLabel);
+    sortWrapper.appendChild(sortSelect);
     
     toolsWrapper.style = "display: flex; justify-content: center; align-items: flex-end; height: 30px;";
-    toolsWrapper.appendChild(sortDropdown);
+    toolsWrapper.appendChild(sortWrapper);
 
     toolBar.appendChild(projName);
     toolBar.appendChild(toolsWrapper);
