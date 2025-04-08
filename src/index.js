@@ -54,6 +54,6 @@ defaultProject.addTask(sampleTask);
 defaultProject.addTask(sampleTask2);
 defaultProject.addTask(sampleTask3);
 
-renderAddBtn(projectList);
-renderSidebar(projectList, activeProject);
-renderContent(activeProject);
+renderAddBtn([]);
+renderSidebar();
+renderContent();

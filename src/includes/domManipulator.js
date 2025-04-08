@@ -34,17 +34,15 @@ export function renderAddBtn(projectList) {
 /**
  * Renders a directory of current projects in a sidebar.
  * 
- * @param {Array[Project]} projects is the array of current projects.
+ * @param {Array[Project]} projectList is the array of current projects.
  */
-export function renderSidebar(projects) {
+export function renderSidebar(projectList) {
     const sidebar = document.querySelector("#sidebar");
     sidebar.innerHTML = "";
 
-    const activeProject = projects.find(project => project.active);
-
-    projects.forEach(project => {
+    projectList.forEach(project => {
         const projectItem = createProjectItem(project);
-        projectItem.addEventListener("click", (e) => handleProjectClick(projects, project, activeProject));
+        projectItem.addEventListener("click", (e) => handleProjectClick(e, projectList, project));
         sidebar.appendChild(projectItem);
     });
 }
@@ -118,10 +116,16 @@ function renderTaskTile(task, project) {
     }    
 }
 
-function renderForm(type, projectList, activeProject) {
+/**
+ * Renders the form with the specified type.
+ * 
+ * @param {string} type is the type of form to display.
+ * @param {*} projectList is the current list of projects.
+ */
+function renderForm(type, projectList) {
     if (type === 'task') {
         const taskForm = createTaskFormItem();
-        taskForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList, activeProject));
+        taskForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList));
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -137,7 +141,7 @@ function renderForm(type, projectList, activeProject) {
         taskForm.querySelector('img').addEventListener('click', () => document.body.removeChild(modalOverlay));
     } else if (type == 'project') {
         const projForm = createProjectFormItem();
-        projForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList, activeProject));
+        projForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList));
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -160,14 +164,37 @@ function renderForm(type, projectList, activeProject) {
  */
 
 // Handles clicking on projects in sidebar
-function handleProjectClick(projectList, clickedProject, activeProject) {
-    if (clickedProject === activeProject) {
-        return;
+function handleProjectClick(e, projectList, clickedProject) {
+    if (e.target.classList.contains('remove-project-button')) {
+        // TODO
+        console.log(e.target);
+        const projectId = e.target.id.slice(e.target.id.indexOf('-') + 1);
+
+        // let projectIdx = 0;
+        // let projectToDisplay = null;
+        // for (let i = 0; i < projectList.length; i++) {
+        //     const project = projectList[i];
+        //     if (project.id === projectId) {
+        //         if (i === projectList.length - 1) {
+        //             projectToDisplay
+        //         }
+        //         projectToDisplay = i < projectList.length - 1 && i > 1
+        //     }
+        // }
+        // projectList.splice(projectList.indexOf(projectIdx), 1);
+        // renderSidebar()
+
+    } else {
+        const activeProject = projectList.find(project => project.active);
+        if (clickedProject === activeProject) {
+            return;
+        }
+        clickedProject.toggleActive();
+        activeProject.toggleActive();
+        renderContent(clickedProject);
+        renderSidebar(projectList);
     }
-    clickedProject.toggleActive();
-    activeProject.toggleActive();
-    renderContent(clickedProject);
-    renderSidebar(projectList);
+    
 }
 
 // Handles clicking on task buttons
@@ -216,8 +243,14 @@ function handleAdd(projectList) {
 // Handles form submission
 function handleFormSubmit(e, projectList) {
     e.preventDefault();
-    const activeProject = projectList.find(project => project.active);
     if (e.target.classList.contains('task-form')) {
+        if (projectList.length === 0) {
+            alert('Create a new project first!');
+            const modalOverlay = document.querySelector('.modal-overlay');
+            document.body.removeChild(modalOverlay);
+            return;
+        }
+        const activeProject = projectList.find(project => project.active);
         const newTask = new Task('temp', activeProject.id);
         for (let item of e.target.children) {
             if (item.value) {
@@ -240,6 +273,9 @@ function handleFormSubmit(e, projectList) {
         renderContent(activeProject);
     } else if (e.target.classList.contains('project-form')) {
         const newProject = new Project('temp');
+        if (projectList.length === 0) {
+            newProject.active = true;
+        }
         for (let item of e.target.children) {
             if (item.value) {
                 if (item.name === 'name') {
@@ -251,6 +287,7 @@ function handleFormSubmit(e, projectList) {
         document.body.removeChild(modalOverlay);
         projectList.push(newProject);
         renderSidebar(projectList);
+        renderContent(newProject);
     }
     
 }

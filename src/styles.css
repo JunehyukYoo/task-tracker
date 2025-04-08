@@ -47,7 +47,7 @@ img:hover {
     width: 100%;
     height: 30px;
     display: flex;
-    justify-content: left;
+    justify-content: space-between;
     align-items: center;
     border-bottom: 0.25px solid rgb(143, 146, 146);
 }
@@ -138,7 +138,8 @@ img:hover {
 /* Forms and modal styling */
 .task-form,
 .project-form,
-.form-selector {
+.form-selector,
+.task-tile {
     display: flex;
     width: 60%;
     flex-direction: column;

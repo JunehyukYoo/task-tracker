@@ -12,8 +12,39 @@ import { format } from "date-fns";
 // Creates project DOM element for sidebar div
 export function createProjectItem(project) {
     const projectItem = document.createElement("div");
-    const iconHtml = project.active ? `<img src="${folderOpenIcon}"/>` : `<img src="${folderClosedIcon}"/>`;
-    projectItem.innerHTML = `<span class="material-symbols-outlined" style="margin-right: 3px">${iconHtml}</span>${project.name}`;
+
+    const removeBtn = document.createElement('img');
+    removeBtn.classList.add('remove-project-button');
+    removeBtn.id = `rm-${project.id}`;
+    removeBtn.src = removeIcon;
+
+    const directory = document.createElement('div');
+    directory.style = `
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    `;
+    
+    const folderSpan = document.createElement('span');
+    folderSpan.classList.add('material-symbols-outlined');
+    //folderSpan.style = 'margin-right: 3px;';
+
+    const folderTitle = document.createElement('p');
+    folderTitle.textContent = project.name;
+
+    const folderIcon = document.createElement('img');
+    folderIcon.src = project.active ? folderOpenIcon : folderClosedIcon;
+
+    folderSpan.appendChild(folderIcon);
+
+    directory.appendChild(folderSpan);
+    directory.appendChild(folderTitle);
+    
+    // directory.innerHTML = `
+    //     <span class="material-symbols-outlined" style="margin-right: 3px">${iconHtml}</span>${project.name}`;
+    
+    projectItem.appendChild(directory);
+    projectItem.appendChild(removeBtn);
     projectItem.classList.add("project-item");
 
     return projectItem;
@@ -76,6 +107,7 @@ export function createTaskItem(task, mode = 'list') {
         taskItem.appendChild(taskBtnWrapper);
     } else if (mode == "tile") {      
         // Title element (centered)
+        taskItem.classList.add('task-tile');
         const taskTitle = document.createElement("div");
         taskTitle.textContent = task.title;
         taskTitle.style = `
