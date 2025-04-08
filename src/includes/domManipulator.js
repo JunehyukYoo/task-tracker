@@ -3,14 +3,43 @@ import { Task } from './task';
 import { Project } from './project'
 import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, createProjectFormItem, createFormSelectionItem } from "./domCreator";
 
+// Store list of projects as a global variable
+var projectList = [];
+var activeProject = null;
+
 /**
- *  RENDERING
+ * Initialize dynamic rendering of webpage. 
+ * 
+ * @param {*} projList The current project list. 
+ */
+export function init(projList) {
+    console.log(projectList);
+    renderAddBtn();
+    if (projList.length !== 0) {
+        projectList = projList;
+        const activeProject = projList.find(project => project.active);
+        renderContent(activeProject);
+    } else {
+        renderContent();
+    }
+    renderSidebar();
+}
+
+/**
+ * @returns list of projects to save in index.js.
+ */
+export function getProjectList() {
+    return projectList;
+}
+
+/**
+ *  --------------RENDERING--------------
  */
 
 /**
  * Renders add button (for tasks and projects) statically.
  */
-export function renderAddBtn(projectList) {
+export function renderAddBtn() {
     const addBtn = document.createElement("button");
     addBtn.innerHTML = `<svg
                             class="add-new-icon"
@@ -27,22 +56,24 @@ export function renderAddBtn(projectList) {
                             <path stroke-width="1.5" d="M12 16V8"></path>
                         </svg>`;
     addBtn.classList.add("add-new-btn");
-    addBtn.addEventListener("click", () => handleAdd(projectList));
+    addBtn.addEventListener("click", handleAdd);
     document.body.appendChild(addBtn);
 }
 
 /**
  * Renders a directory of current projects in a sidebar.
- * 
- * @param {Array[Project]} projectList is the array of current projects.
  */
-export function renderSidebar(projectList) {
+export function renderSidebar() {
     const sidebar = document.querySelector("#sidebar");
     sidebar.innerHTML = "";
 
+    if (projectList.length === 0) {
+        return;
+    }
+
     projectList.forEach(project => {
         const projectItem = createProjectItem(project);
-        projectItem.addEventListener("click", (e) => handleProjectClick(e, projectList, project));
+        projectItem.addEventListener("click", (e) => handleProjectClick(e, project));
         sidebar.appendChild(projectItem);
     });
 }
@@ -57,6 +88,10 @@ export function renderSidebar(projectList) {
 export function renderContent(project, method = "created") {
     const content = document.querySelector("#content");
     content.innerHTML = "";
+
+    if (!project) {
+        return;
+    }
 
     const toolBar = createToolBar(project);
     toolBar.addEventListener('change', (e) => {
@@ -120,12 +155,11 @@ function renderTaskTile(task, project) {
  * Renders the form with the specified type.
  * 
  * @param {string} type is the type of form to display.
- * @param {*} projectList is the current list of projects.
  */
-function renderForm(type, projectList) {
+function renderForm(type) {
     if (type === 'task') {
         const taskForm = createTaskFormItem();
-        taskForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList));
+        taskForm.addEventListener('submit', handleFormSubmit);
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -141,7 +175,7 @@ function renderForm(type, projectList) {
         taskForm.querySelector('img').addEventListener('click', () => document.body.removeChild(modalOverlay));
     } else if (type == 'project') {
         const projForm = createProjectFormItem();
-        projForm.addEventListener('submit', (e) => handleFormSubmit(e, projectList));
+        projForm.addEventListener('submit', handleFormSubmit);
 
         let modalOverlay = document.querySelector('.modal-overlay');
         if (modalOverlay) {
@@ -160,31 +194,50 @@ function renderForm(type, projectList) {
 
 
 /**
- *  EVENT HANDLING
+ *  --------------EVENT HANDLING--------------
  */
 
-// Handles clicking on projects in sidebar
-function handleProjectClick(e, projectList, clickedProject) {
+
+/**
+ * Handles the event where a project on the sidebar is clicked. This includes 
+ * toggling between projects and removing them. 
+ * 
+ * @param {Event} e is the event where a project div on the sidebar is clicked.
+ * @param {Project} clickedProject is the specific project clicked.
+ */
+function handleProjectClick(e, clickedProject) {
     if (e.target.classList.contains('remove-project-button')) {
-        // TODO
+        if (projectList.length === 1) {
+            projectList = [];
+            renderSidebar();
+            renderContent();
+        }
+
         console.log(e.target);
         const projectId = e.target.id.slice(e.target.id.indexOf('-') + 1);
 
-        // let projectIdx = 0;
-        // let projectToDisplay = null;
-        // for (let i = 0; i < projectList.length; i++) {
-        //     const project = projectList[i];
-        //     if (project.id === projectId) {
-        //         if (i === projectList.length - 1) {
-        //             projectToDisplay
-        //         }
-        //         projectToDisplay = i < projectList.length - 1 && i > 1
-        //     }
-        // }
-        // projectList.splice(projectList.indexOf(projectIdx), 1);
-        // renderSidebar()
+        let projectToRemoveIdx = 0;
+        let projectToDisplay = null;
+        for (let i = 0; i < projectList.length; i++) {
+            const project = projectList[i];
+            if (project.id === projectId) {
+                if (i === projectList.length - 1) {
+                    projectToDisplay = projectList[0];
+                } else {
+                    projectToDisplay = projectList[i+1];
+                }
+                projectToRemoveIdx = i;
+            }
+        }
+        projectToDisplay.toggleActive();
+        projectList.splice(projectToRemoveIdx, 1);
+        renderSidebar();
+        renderContent(projectToDisplay);
 
     } else {
+        if (projectList.length === 1) {
+            return;
+        }
         const activeProject = projectList.find(project => project.active);
         if (clickedProject === activeProject) {
             return;
@@ -192,12 +245,19 @@ function handleProjectClick(e, projectList, clickedProject) {
         clickedProject.toggleActive();
         activeProject.toggleActive();
         renderContent(clickedProject);
-        renderSidebar(projectList);
+        renderSidebar();
     }
     
 }
 
-// Handles clicking on task buttons
+/**
+ * Handles the event where a task is clicked. This includes the toggle completed button,
+ * the expand button, and the remove button.
+ * 
+ * @param {Event} e is the current event where a task has been clicked.
+ * @param {Task} task is the task which was clicked.
+ * @param {Project} project of this specific task.
+ */
 function handleTaskClick(e, task, project) {
     const isTile = e.target.parentNode.parentNode.classList.contains('task-tile');
     if (e.target.classList.contains("toggle-complete-button")) {
@@ -221,8 +281,10 @@ function handleTaskClick(e, task, project) {
     }
 }
 
-// Handles clicking the add button by displaying a modal
-function handleAdd(projectList) {
+/**
+ * Handles clicking the add button to create a task/project.
+ */
+function handleAdd() {
     const formSelector = createFormSelectionItem();
 
     const modalOverlay = document.createElement('div');
@@ -240,8 +302,12 @@ function handleAdd(projectList) {
     modalOverlay.querySelector("#add-project").addEventListener("click", () => renderForm('project', projectList));
 }
 
-// Handles form submission
-function handleFormSubmit(e, projectList) {
+/**
+ * Handles form submission for a new task/project.
+ * 
+ * @param {Event} e is the event where form submission occurred.
+ */
+function handleFormSubmit(e) {
     e.preventDefault();
     if (e.target.classList.contains('task-form')) {
         if (projectList.length === 0) {

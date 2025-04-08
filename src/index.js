@@ -3,16 +3,12 @@
 import "./styles.css";
 import { Task } from "./includes/task.js";
 import { Project } from "./includes/project.js";
-import { renderAddBtn, renderContent, renderSidebar } from "./includes/domManipulator.js";
+import { init } from "./includes/domManipulator.js";
 
 // Initialize default project for user
 const defaultProject = new Project("default");
 const testProj = new Project("test");
 defaultProject.toggleActive();
-
-
-let projectList = [defaultProject, testProj];
-let activeProject = defaultProject;
 
 const sampleTask = new Task(
     "Finish exam prep",
@@ -50,10 +46,10 @@ const sampleTask3 = new Task(
 );
 sampleTask2.toggleCompleted();
 
+let projectList = [defaultProject, testProj];
+
 defaultProject.addTask(sampleTask);
 defaultProject.addTask(sampleTask2);
 defaultProject.addTask(sampleTask3);
 
-renderAddBtn([]);
-renderSidebar();
-renderContent();
+init(projectList);
