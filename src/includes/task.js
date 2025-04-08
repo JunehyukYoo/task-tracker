@@ -20,8 +20,7 @@ export class Task {
         return JSON.stringify(this);
     }
 
-    static fromJson(json) {
-        const raw = JSON.parse(json);
+    static fromJson(raw) {
         return new Task(raw.title, raw.description, new Date(raw.dueDate), raw.priority, raw.notes, raw.project);
     }
 }

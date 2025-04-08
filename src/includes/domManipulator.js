@@ -12,6 +12,16 @@ var projectList = [];
  * @param {*} projList The current project list. 
  */
 export function init(projList) {
+
+    if (storageAvailable('localStorage')) {
+        if (localStorage.length === 0) {
+            // Create default project
+        } else {
+            // Populate projectList
+            // With every change, update projectList in localStorage
+        }
+    }
+
     console.log(projectList);
     renderAddBtn();
     if (projList.length !== 0) {
@@ -25,11 +35,30 @@ export function init(projList) {
 }
 
 /**
- * @returns list of projects to save in index.js.
+ * Code from: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
+ * 
+ * @param {*} type 
+ * @returns true if Web Storage API is avaliable 
  */
-export function getProjectList() {
-    return projectList;
-}
+function storageAvailable(type) {
+    let storage;
+    try {
+      storage = window[type];
+      const x = "__storage_test__";
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+    } catch (e) {
+      return (
+        e instanceof DOMException &&
+        e.name === "QuotaExceededError" &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        storage &&
+        storage.length !== 0
+      );
+    }
+  }
+  
 
 /**
  *  --------------RENDERING--------------

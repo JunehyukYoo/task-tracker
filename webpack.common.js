@@ -3,6 +3,27 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  resolve: {
+    fallback: {
+      'util': false,
+      'fs': false,
+      'child_process': false,
+      'worker_threads': false,
+      "constants": false,
+      "vm": false,
+      "path": false,
+      "crypto": false,
+      "zlib": false,
+      "stream": false,
+      "assert": false,
+      "buffer": false,
+      "http": false,
+      "url": false,
+      "https": false,
+      "os": false,
+      "querystring": false
+    }
+  },
  entry: {
    app: './src/index.js',
  },

@@ -4,10 +4,8 @@ import "./styles.css";
 import { Task } from "./includes/task.js";
 import { Project } from "./includes/project.js";
 import { init } from "./includes/domManipulator.js";
-
 // Initialize default project for user
 const defaultProject = new Project("default");
-const testProj = new Project("test");
 defaultProject.toggleActive();
 
 const sampleTask = new Task(
@@ -46,10 +44,21 @@ const sampleTask3 = new Task(
 );
 sampleTask2.toggleCompleted();
 
-let projectList = [defaultProject, testProj];
-
 defaultProject.addTask(sampleTask);
 defaultProject.addTask(sampleTask2);
 defaultProject.addTask(sampleTask3);
 
-init(projectList);
+let projectList = [defaultProject];
+
+const testJson = defaultProject.toJson();
+console.log(testJson);
+const testBack = Project.fromJson(testJson);
+console.log(testBack);
+
+// init(projectList);
+// localStorage.clear();
+// console.log(localStorage);
+// localStorage.setItem('projectList', projectList);
+// const list = localStorage.getItem('projectList');
+// console.log(list);
+// console.log(localStorage);

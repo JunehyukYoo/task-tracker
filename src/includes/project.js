@@ -1,4 +1,5 @@
 // project.js
+import { Task } from './task';
 
 // tasks is an array = {task1, task2, ...};
 export class Project {
@@ -49,5 +50,23 @@ export class Project {
             });
         }
         return tasksCopy;
+    }
+
+    toJson() {
+        return JSON.stringify(this);
+    }
+
+    static fromJson(json) {
+        const raw = JSON.parse(json);
+        const proj = new Project('temp');
+        proj.name = raw.name;
+        proj.id = raw.id;
+        proj.active = raw.active;
+        const taskList = [];
+        raw.tasks.forEach(task => {
+            taskList.push(Task.fromJson(task));
+        });
+        proj.tasks = taskList;
+        return proj;
     }
 }
