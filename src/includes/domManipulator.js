@@ -5,7 +5,6 @@ import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, c
 
 // Store list of projects as a global variable
 var projectList = [];
-var activeProject = null;
 
 /**
  * Initialize dynamic rendering of webpage. 
@@ -211,28 +210,28 @@ function handleProjectClick(e, clickedProject) {
             projectList = [];
             renderSidebar();
             renderContent();
+            return;
         }
 
         console.log(e.target);
         const projectId = e.target.id.slice(e.target.id.indexOf('-') + 1);
 
-        let projectToRemoveIdx = 0;
-        let projectToDisplay = null;
-        for (let i = 0; i < projectList.length; i++) {
-            const project = projectList[i];
-            if (project.id === projectId) {
-                if (i === projectList.length - 1) {
-                    projectToDisplay = projectList[0];
-                } else {
-                    projectToDisplay = projectList[i+1];
-                }
-                projectToRemoveIdx = i;
-            }
+        const toRemoveIdx = projectList.findIndex(project => project.id === projectId);
+        let toDisplay = null;
+        if (toRemoveIdx == projectList.length - 1) {
+            toDisplay = projectList[0];
+        } else {
+            toDisplay = projectList[toRemoveIdx + 1];
         }
-        projectToDisplay.toggleActive();
-        projectList.splice(projectToRemoveIdx, 1);
+
+        if (!toDisplay.active) {
+            toDisplay.toggleActive();
+        }
+        
+
+        projectList.splice(toRemoveIdx, 1);
         renderSidebar();
-        renderContent(projectToDisplay);
+        renderContent(toDisplay);
 
     } else {
         if (projectList.length === 1) {
@@ -353,7 +352,6 @@ function handleFormSubmit(e) {
         document.body.removeChild(modalOverlay);
         projectList.push(newProject);
         renderSidebar(projectList);
-        renderContent(newProject);
     }
     
 }
