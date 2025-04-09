@@ -7,7 +7,7 @@ export class Project {
         this.name = name;
         this.tasks = tasks;
         this.id = crypto.randomUUID();
-        this.active = false;
+        this.active = active;
     }
 
     // Adds a task to the array
@@ -56,8 +56,8 @@ export class Project {
         return JSON.stringify(this);
     }
 
-    static fromJson(json) {
-        const raw = JSON.parse(json);
+    static fromJson(raw) {
+        //const raw = JSON.parse(json);
         const proj = new Project('temp');
         proj.name = raw.name;
         proj.id = raw.id;

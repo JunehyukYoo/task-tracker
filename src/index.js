@@ -50,15 +50,20 @@ defaultProject.addTask(sampleTask3);
 
 let projectList = [defaultProject];
 
-const testJson = defaultProject.toJson();
-console.log(testJson);
-const testBack = Project.fromJson(testJson);
-console.log(testBack);
+// const testJson = defaultProject.toJson();
+// console.log(testJson);
+// const testBack = Project.fromJson(testJson);
+// console.log(testBack);
 
-// init(projectList);
-// localStorage.clear();
+console.log(localStorage);
+localStorage.setItem('projectList', JSON.stringify(projectList));
+const list = JSON.parse(localStorage.getItem('projectList'));
+
+let newProjList = []
+list.forEach(project => {
+    console.log(project);
+    newProjList.push(Project.fromJson(project));
+});
+console.log(newProjList);
 // console.log(localStorage);
-// localStorage.setItem('projectList', projectList);
-// const list = localStorage.getItem('projectList');
-// console.log(list);
-// console.log(localStorage);
+localStorage.clear();

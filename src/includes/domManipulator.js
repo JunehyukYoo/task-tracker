@@ -9,24 +9,29 @@ var projectList = [];
 /**
  * Initialize dynamic rendering of webpage. 
  * 
- * @param {*} projList The current project list. 
+ * @param {Array[Project]} projList The current project list. 
  */
 export function init(projList) {
-
+    // window.localStorange handling
     if (storageAvailable('localStorage')) {
-        if (localStorage.length === 0) {
+        const storedProjects = localStorage.getItem('projectList');
+        if (!storedProjects) {
             // Create default project
         } else {
-            // Populate projectList
-            // With every change, update projectList in localStorage
+            // Populate localStorage
+            const jsonList = JSON.parse(storedProjects);
+            const newProjectList = [];
+            jsonList.forEach((projectRaw) => {
+                newProjectList.push(Project.fromJson(projectRaw));
+            });
+            projectList = newProjectList;
         }
     }
 
-    console.log(projectList);
+    // Rendering logic
     renderAddBtn();
-    if (projList.length !== 0) {
-        projectList = projList;
-        const activeProject = projList.find(project => project.active);
+    if (projectList.length !== 0) {
+        const activeProject = projectList.find(project => project.active);
         renderContent(activeProject);
     } else {
         renderContent();
@@ -37,27 +42,37 @@ export function init(projList) {
 /**
  * Code from: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
  * 
- * @param {*} type 
+ * @param {string} type is the type of storage method to check: 'localStorage' | 'sessionStorage'
  * @returns true if Web Storage API is avaliable 
  */
 function storageAvailable(type) {
     let storage;
     try {
-      storage = window[type];
-      const x = "__storage_test__";
-      storage.setItem(x, x);
-      storage.removeItem(x);
-      return true;
+        storage = window[type];
+        const x = "__storage_test__";
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
     } catch (e) {
-      return (
+        return (
         e instanceof DOMException &&
         e.name === "QuotaExceededError" &&
         // acknowledge QuotaExceededError only if there's something already stored
         storage &&
         storage.length !== 0
-      );
+        );
     }
-  }
+}
+
+  /**
+ * Update localStorage with the current projectList.
+ * This function centralizes storage updating.
+ */
+function updateLocalStorage() { // ADDED: New helper function
+    if (storageAvailable('localStorage')) {
+        localStorage.setItem("projectList", JSON.stringify(projectList));
+    }
+}
   
 
 /**
