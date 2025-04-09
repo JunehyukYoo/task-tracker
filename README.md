@@ -73,7 +73,19 @@ Defined in `package.json`:
 
 5. **Deploy to GitHub Pages (optional):**
 
-   Ensure your repository has a `gh-pages` branch, then run:
+   Ensure your repository has a `gh-pages` branch and checkout into the branch:
+
+   ```bash
+   git checkout gh-pages
+   ```
+
+   Once you are on your branch, you need to bundle your source files for production is you have not already:
+
+   ```bash
+   npm run build
+   ```
+
+   Once your dist folder is populated with the bundled code, run:
 
    ```bash
    npm run deploy
