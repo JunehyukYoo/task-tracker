@@ -1,6 +1,6 @@
-# Webpack Template Starter
+# Task Tracker App
 
-This repository provides a clean and modular setup for modern JavaScript projects using **Webpack**. It supports development and production builds, and includes support for deploying to GitHub Pages via `dist/`.
+**Task Tracker** is a modern web application for managing your daily tasks. Built on top off of my own [Webpack template repository](https://github.com/JunehyukYoo/template-webpack), this project combines a modular, up-to-date development environment with task management functionality to help you stay organized and boost your productivity. The tasks are currently being stored with the vanilla Web Storage API.
 
 ## 📁 Project Structure
 
@@ -8,13 +8,16 @@ This repository provides a clean and modular setup for modern JavaScript project
 .
 ├── dist/                  # Compiled production files (generated)
 ├── node_modules/          # Installed dependencies
-├── src/                   # Source code (HTML, JS, CSS)
-│   └── template.html      # HTML template used by HtmlWebpackPlugin
+├── src/                   # Application source code (HTML, JS, CSS)
+|   ├── includes/          # Folder containing core JavaScript logic
+│   ├── template.html      # HTML template used by HtmlWebpackPlugin (includes initial Task Tracker UI)
+│   ├── styles.css         # Main styles for the application
+│   └── index.js           # Entry point for bundler
 ├── .gitignore             # Ignores node_modules and dist from Git
 ├── package.json           # Project metadata and scripts
-├── webpack.common.js      # Shared Webpack config
-├── webpack.dev.js         # Dev-specific Webpack config
-├── webpack.prod.js        # Prod-specific Webpack config
+├── webpack.common.js      # Shared Webpack configuration
+├── webpack.dev.js         # Development-specific Webpack configuration
+├── webpack.prod.js        # Production-specific Webpack configuration
 ├── README.md              # You're here!
 ```
 
@@ -32,11 +35,11 @@ Defined in `package.json`:
 
 ### 🔧 Script Breakdown:
 
-| Command         | Description                                                                 |
-|----------------|-----------------------------------------------------------------------------|
-| `npm run build` | Builds the project for production. Output goes to the `/dist` folder.      |
-| `npm run dev`   | Runs the development server at `http://localhost:8080/` and opens browser. |
-| `npm run deploy`| Deploys `/dist` to the `gh-pages` branch using Git Subtree.                |
+| Command          | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| `npm run build`  | Builds the project for production. Output goes to the `/dist` folder.      |
+| `npm run dev`    | Runs the development server at `http://localhost:8080/` and opens the browser. |
+| `npm run deploy` | Deploys `/dist` to the `gh-pages` branch using Git Subtree.                |
 
 ## ✅ Setup Instructions
 
@@ -53,11 +56,13 @@ Defined in `package.json`:
    npm install
    ```
 
-3. **Start development server:**
+3. **Start the development server:**
 
    ```bash
    npm run dev
    ```
+
+   The app will open in your browser at [http://localhost:8080/](http://localhost:8080/).
 
 4. **Build for production:**
 
@@ -67,7 +72,7 @@ Defined in `package.json`:
 
 5. **Deploy to GitHub Pages (optional):**
 
-   Make sure your repo has a `gh-pages` branch and run:
+   Ensure your repository has a `gh-pages` branch, then run:
 
    ```bash
    npm run deploy
@@ -75,20 +80,25 @@ Defined in `package.json`:
 
 ## 📦 What’s Included
 
-- ✅ Webpack 5
-- ✅ Dev server with live reload
-- ✅ Source maps
-- ✅ Production optimization (minified JS/CSS)
+- ✅ Webpack 5 for modular builds
+- ✅ Development server with live reload
+- ✅ Source maps for easier debugging
+- ✅ Production optimizations (minified JS/CSS)
 - ✅ HTML template integration via `HtmlWebpackPlugin`
 - ✅ GitHub Pages deployment via `subtree push`
 - ✅ `.gitignore` set up for `node_modules` and `dist`
+- ✅ Task Tracker application logic (manage tasks with add, update, and delete functionality)
 
-## 🧠 Notes
+## 🧠 About the Task Tracker App
 
-- The actual source code goes in the `src/` folder.
-- You can modify `src/template.html` and `src/index.js` to kick off your project.
-- Use the `webpack.common.js`, `webpack.dev.js`, and `webpack.prod.js` files to customize your build process.
+The Task Tracker App is designed to be simple yet powerful:
 
-## 📝 License
+- **Add New Tasks:** Quickly add tasks to your list.
+- **Bundle Tasks in Projects:** Keep your tasks organized in user-defined projects.
+- **Mark as Completed:** Easily update task status.
+- **Delete or Update Tasks:** Keep your task list current and manageable.
+- **Sorting:** Sort your task list in multiple ways.
+- **Pseudo-backend:** Save your updated tasks even on window close or refresh.
+- **Modular & Scalable:** Built with a clean Webpack setup that encourages modular code and easy customizations.
 
-This project is a boilerplate/template and is free to use under the [MIT License](LICENSE).
+This project leverages modern JavaScript and build tools to help you get up and running fast, while also serving as a robust foundation for further enhancements.
