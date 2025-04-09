@@ -122,7 +122,7 @@ export function createTaskItem(task, mode = 'list') {
         const taskDesc = document.createElement("div");
         taskDesc.textContent = task.description;
         taskDesc.style = `
-            flex: 1;
+            flex: 0;
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;

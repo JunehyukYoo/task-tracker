@@ -75,11 +75,9 @@ export function init() {
         } else {
             // Populate localStorage
             const jsonList = JSON.parse(storedProjects);
-            console.log(jsonList);
             const newProjectList = [];
             jsonList.forEach((projectRaw) => {
                 const newProject = Project.fromJson(projectRaw);
-                console.log(newProject);
                 newProjectList.push(newProject);
             });
             projectList = newProjectList;
@@ -316,8 +314,6 @@ function handleProjectClick(e, clickedProject) {
             updateLocalStorage();
             return;
         }
-
-        console.log(e.target);
         const projectId = e.target.id.slice(e.target.id.indexOf('-') + 1);
 
         const toRemoveIdx = projectList.findIndex(project => project.id === projectId);
