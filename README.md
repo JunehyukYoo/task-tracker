@@ -9,6 +9,7 @@
 ├── dist/                  # Compiled production files (generated)
 ├── node_modules/          # Installed dependencies
 ├── src/                   # Application source code (HTML, JS, CSS)
+|   ├── asset/             # Folder containing assets (images, svgs, etc.)
 |   ├── includes/          # Folder containing core JavaScript logic
 │   ├── template.html      # HTML template used by HtmlWebpackPlugin (includes initial Task Tracker UI)
 │   ├── styles.css         # Main styles for the application
