@@ -7,22 +7,80 @@ import { createTaskItem, createProjectItem, createToolBar, createTaskFormItem, c
 var projectList = [];
 
 /**
- * Initialize dynamic rendering of webpage. 
- * 
- * @param {Array[Project]} projList The current project list. 
+ * Initialize dynamic rendering of webpage. Entry point into
+ * rest of logic in the webpage. 
  */
-export function init(projList) {
+export function init() {
     // window.localStorange handling
     if (storageAvailable('localStorage')) {
         const storedProjects = localStorage.getItem('projectList');
         if (!storedProjects) {
-            // Create default project
+            // Default project on first-open
+            const defaultProject = new Project("default");
+            defaultProject.toggleActive();
+
+            const sampleTask1 = new Task(
+                "Complete Assignment",
+                defaultProject.id,
+                "Finish math assignment and review class notes.",
+                new Date(2025, 5, 14),
+                "High",
+                `Assignment Details:
+                - Read textbook chapters 4 and 5.
+                - Solve practice problems.
+                - Write a brief summary for each chapter.
+                - Proofread and review the final submission.
+                Ensure all guidelines provided by your instructor are met.`
+            );
+            
+            const sampleTask2 = new Task(
+                "Go workout",
+                defaultProject.id,
+                "Hit full body day.",
+                new Date(2025, 4, 9),
+                "Low",
+                `Workout Plan:
+                - Warm-up: 5-10 minutes of light cardio and dynamic stretching.
+                - Bench Press: 3 sets x 10 reps at 70% of your max.
+                - Squats: 3 sets x 8 reps at 75% of your max.
+                - Deadlifts: 3 sets x 5 reps at 80% of your max.
+                - Overhead Press: 3 sets x 10 reps at 60% of your max.
+                - Dumbbell Rows: 3 sets x 12 reps per arm.
+                - Cool Down: 5 minutes of stretching and foam rolling.
+                Remember to rest 1-2 minutes between sets and focus on proper form for each exercise.`
+            );
+            
+            const sampleTask3 = new Task(
+                "Grocery Shopping",
+                defaultProject.id,
+                "Buy weekly groceries from the local market.",
+                new Date(2026, 4, 12),
+                "Medium",
+                `Shopping List:
+                - Fruits: Apples, bananas, and berries.
+                - Vegetables: Carrots, broccoli, and spinach.
+                - Dairy: Milk, cheese, and yogurt.
+                - Others: Bread, eggs, and coffee.
+                Plan your shopping route and look out for weekly deals.`
+            );
+            
+            sampleTask2.toggleCompleted();
+
+            defaultProject.addTask(sampleTask1);
+            defaultProject.addTask(sampleTask2);
+            defaultProject.addTask(sampleTask3);
+
+            projectList = [defaultProject];
+            updateLocalStorage();
         } else {
             // Populate localStorage
             const jsonList = JSON.parse(storedProjects);
+            console.log(jsonList);
             const newProjectList = [];
             jsonList.forEach((projectRaw) => {
-                newProjectList.push(Project.fromJson(projectRaw));
+                const newProject = Project.fromJson(projectRaw);
+                console.log(newProject);
+                newProjectList.push(newProject);
             });
             projectList = newProjectList;
         }
@@ -64,13 +122,14 @@ function storageAvailable(type) {
     }
 }
 
-  /**
+/**
  * Update localStorage with the current projectList.
- * This function centralizes storage updating.
+ * This function is only called when a change is made. 
  */
-function updateLocalStorage() { // ADDED: New helper function
+function updateLocalStorage() {
+    console.log("Updating localStorage...")
     if (storageAvailable('localStorage')) {
-        localStorage.setItem("projectList", JSON.stringify(projectList));
+        localStorage.setItem('projectList', JSON.stringify(projectList));
     }
 }
   
@@ -254,6 +313,7 @@ function handleProjectClick(e, clickedProject) {
             projectList = [];
             renderSidebar();
             renderContent();
+            updateLocalStorage();
             return;
         }
 
@@ -272,11 +332,10 @@ function handleProjectClick(e, clickedProject) {
             toDisplay.toggleActive();
         }
         
-
         projectList.splice(toRemoveIdx, 1);
         renderSidebar();
         renderContent(toDisplay);
-
+        updateLocalStorage();
     } else {
         if (projectList.length === 1) {
             return;
@@ -289,6 +348,7 @@ function handleProjectClick(e, clickedProject) {
         activeProject.toggleActive();
         renderContent(clickedProject);
         renderSidebar();
+        updateLocalStorage();
     }
     
 }
@@ -309,6 +369,7 @@ function handleTaskClick(e, task, project) {
         if (isTile) {
             renderTaskTile(task, project);
         }
+        updateLocalStorage();
     } else if (e.target.classList.contains("open-full-button")) {
         renderTaskTile(task, project);
     } else if (e.target.classList.contains("remove-task-button")) {
@@ -318,6 +379,7 @@ function handleTaskClick(e, task, project) {
         }
         project.removeTask(task.id);
         renderContent(project);
+        updateLocalStorage();
     } else if (e.target.classList.contains('close-task-tile-button')) {
         const modalOverlay = document.querySelector('.modal-overlay');
         document.body.removeChild(modalOverlay);
@@ -380,6 +442,7 @@ function handleFormSubmit(e) {
         const modalOverlay = document.querySelector('.modal-overlay');
         document.body.removeChild(modalOverlay);
         renderContent(activeProject);
+        updateLocalStorage();
     } else if (e.target.classList.contains('project-form')) {
         const newProject = new Project('temp');
         if (projectList.length === 0) {
@@ -396,6 +459,7 @@ function handleFormSubmit(e) {
         document.body.removeChild(modalOverlay);
         projectList.push(newProject);
         renderSidebar(projectList);
+        updateLocalStorage();
     }
     
 }

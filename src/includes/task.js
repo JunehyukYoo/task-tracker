@@ -21,6 +21,6 @@ export class Task {
     }
 
     static fromJson(raw) {
-        return new Task(raw.title, raw.description, new Date(raw.dueDate), raw.priority, raw.notes, raw.project);
+        return new Task(raw.title, raw.project, raw.description, new Date(raw.dueDate), raw.priority, raw.notes);
     }
 }
